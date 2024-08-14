@@ -1,12 +1,12 @@
-resource "local_file" "gke-consul-server-helm-values" {
-  content = templatefile("${path.root}/templates/gke-consul-server-helm.yml", {
-    deployment_name       = "${var.deployment_name}-gcp"
+resource "local_file" "consul-server-helm-values" {
+  content = templatefile("${path.root}/templates/self-managed-consul-server-helm.yml", {
+    deployment_name       = "${var.deployment_name}-${var.cloud}"
     consul_version        = var.consul_version
     replicas              = var.replicas
     serf_lan_port         = var.serf_lan_port
-    cloud                 = "gcp"
+    cloud                 = var.cloud
     })
-  filename = "${path.module}/gke-server-helm-values.yml.tmp"
+  filename = "${path.module}/${var.cloud}-server-helm-values.yml.tmp"
 }
 
 # consul server
@@ -19,7 +19,7 @@ resource "helm_release" "consul-server" {
   timeout       = "300"
   wait          = true
   values        = [
-    local_file.gke-consul-server-helm-values.content
+    local_file.consul-server-helm-values.content
   ]
 
   depends_on    = [

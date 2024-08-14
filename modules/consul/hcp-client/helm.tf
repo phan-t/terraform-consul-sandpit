@@ -7,7 +7,7 @@ resource "local_file" "eks-client-default-partition-helm-values" {
     external_server_https_port    = 443
     kubernetes_api_endpoint       = var.kubernetes_api_endpoint
     replicas                      = var.replicas
-    cloud                         = "aws"
+    cloud                         = var.cloud
     })
   filename = "${path.module}/eks-client-default-partition-helm-values.yml.tmp"
 }

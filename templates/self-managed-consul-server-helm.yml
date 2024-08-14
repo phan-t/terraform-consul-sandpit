@@ -22,9 +22,9 @@ global:
     disableAgentHostName: true
     agentMetricsRetentionTime: "1m"
 server:
-  replicas: 3
-  bootstrapExpect: 3
-  exposeGossipAndRPCPorts: true
+  replicas: ${replicas}
+  bootstrapExpect: ${replicas}
+  exposeGossipAndRPCPorts: false
   extraConfig: |
     {
       "telemetry": {

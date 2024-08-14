@@ -4,7 +4,5 @@ terraform {
     }
     helm = {
     }
-    consul = {
-    }
   }
 }

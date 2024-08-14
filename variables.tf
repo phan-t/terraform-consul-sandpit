@@ -20,6 +20,12 @@ variable "enable_gcp" {
   default     = false
 }
 
+variable "enable_hcp_consul" {
+  description = "deploy consul on hashiCorp cloud platform (hcp)"
+  type        = bool
+  default     = false
+}
+
 variable "enable_hcp_vault" {
   description = "deploy vault on hashiCorp cloud platform (hcp)"
   type        = bool
@@ -151,7 +157,7 @@ variable "consul_ent_license" {
 variable "consul_replicas" {
   description = "consul replicas"
   type        = number
-  default     = 1
+  default     = 5
 }
 
 variable "consul_serf_lan_port" {

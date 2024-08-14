@@ -71,24 +71,19 @@ provider "helm" {
 
 data "google_client_config" "default" {}
 
-# data "google_container_cluster" "cluster" {
-#   name     = local.deployment_id
-#   location = var.gcp_region
-# }
-
 provider "kubernetes" {
   alias = "gke"
-  host  = var.enable_gcp == true ? module.infra-gcp.cluster_api_endpoint[0] : null
+  host  = var.enable_gcp == true ? module.infra-gcp[0].cluster_api_endpoint : null
   token = data.google_client_config.default.access_token
-  cluster_ca_certificate =var.enable_gcp == true ? base64decode(module.infra-gcp.cluster_ca_certificate[0]) : null
+  cluster_ca_certificate =var.enable_gcp == true ? base64decode(module.infra-gcp[0].cluster_ca_certificate) : null
 }
 
 provider "helm" {
   alias = "gke"
   kubernetes {
-    host  = var.enable_gcp == true ? module.infra-gcp.cluster_api_endpoint[0] : null
+    host  = var.enable_gcp == true ? module.infra-gcp[0].cluster_api_endpoint : null
     token = data.google_client_config.default.access_token
-    cluster_ca_certificate = var.enable_gcp == true ? base64decode(module.infra-gcp.cluster_ca_certificate[0]) : null
+    cluster_ca_certificate = var.enable_gcp == true ? base64decode(module.infra-gcp[0].cluster_ca_certificate) : null
   }
 }
 
@@ -101,8 +96,17 @@ provider "consul" {
 }
 
 provider "consul" {
+  alias = "aws"
+  address        = "https://${module.consul-server-aws[0].aws_ui_public_fqdn}"
+  scheme         = "https"
+  datacenter     = "${var.deployment_name}-aws"
+  token          = module.consul-server-aws[0].bootstrap_token
+  insecure_https = true
+}
+
+provider "consul" {
   alias = "gcp"
-  address        = "https://${module.consul-server-gcp.ui_public_fqdn}"
+  address        = "https://${module.consul-server-gcp.gcp_ui_public_fqdn}"
   scheme         = "https"
   datacenter     = "${var.deployment_name}-gcp"
   token          = module.consul-server-gcp.bootstrap_token

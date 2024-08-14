@@ -65,6 +65,8 @@ module "consul-hcp" {
     consul     = consul.hcp
    }
 
+  count = var.enable_hcp_consul ? 1 : 0
+
   deployment_name = var.deployment_name
   hvn_id          = module.hcp-hvn.id
   tier            = var.hcp_consul_tier
@@ -83,14 +85,37 @@ module "vault-hcp" {
   tier            = var.hcp_vault_tier
 }
 
+// consul datacenter in aws
+
+module "consul-server-aws" {
+  source = "./modules/consul/self-managed"
+  providers = {
+    kubernetes = kubernetes.eks
+    helm       = helm.eks
+   }
+
+  count = var.enable_hcp_consul ? 0 : 1
+
+  deployment_name       = var.deployment_name
+  helm_chart_version    = var.consul_helm_chart_version
+  consul_version        = "${var.consul_version}-ent"
+  consul_ent_license    = var.consul_ent_license
+  serf_lan_port         = var.consul_serf_lan_port
+  replicas              = var.consul_replicas
+  cloud                 = "aws"
+
+  depends_on = [
+    module.infra-aws
+  ]
+}
+
 // consul datacenter in gcp
 
 module "consul-server-gcp" {
-  source = "./modules/consul/gcp"
+  source = "./modules/consul/self-managed"
   providers = {
     kubernetes = kubernetes.gke
     helm       = helm.gke
-    consul     = consul.gcp
    }
 
   count = var.enable_gcp ? 1 : 0
@@ -101,6 +126,7 @@ module "consul-server-gcp" {
   consul_ent_license    = var.consul_ent_license
   serf_lan_port         = var.consul_serf_lan_port
   replicas              = var.consul_replicas
+  cloud                 = "gcp"
 
   depends_on = [
     module.infra-gcp
@@ -110,22 +136,24 @@ module "consul-server-gcp" {
 // consul client (default partition) in aws
 
 module "consul-client-aws" {
-  source    = "./modules/consul/aws"
+  source    = "./modules/consul/hcp-client"
   providers = {
     kubernetes = kubernetes.eks
     helm       = helm.eks
-    consul     = consul.hcp
    }
+
+  count = var.enable_hcp_consul ? 1 : 0
 
   deployment_name         = var.deployment_name
   helm_chart_version      = var.consul_helm_chart_version
   consul_version          = "${var.consul_version}-ent"
-  private_endpoint_url    = module.consul-hcp.private_endpoint_url
-  bootstrap_token         = module.consul-hcp.bootstrap_token
-  gossip_encrypt_key      = module.consul-hcp.gossip_encrypt_key
-  client_ca_cert          = module.consul-hcp.client_ca_cert
+  private_endpoint_url    = var.enable_hcp_consul == false ? module.consul-hcp[0].private_endpoint_url : ""
+  bootstrap_token         = var.enable_hcp_consul == false ? module.consul-hcp[0].bootstrap_token : ""
+  gossip_encrypt_key      = var.enable_hcp_consul == false ? module.consul-hcp[0].gossip_encrypt_key : ""
+  client_ca_cert          = var.enable_hcp_consul == false ? module.consul-hcp[0].client_ca_cert : ""
   replicas                = var.consul_replicas
   kubernetes_api_endpoint = data.aws_eks_cluster.cluster.endpoint
+  cloud                   = "aws"
 
   depends_on = [
     module.infra-aws

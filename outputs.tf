@@ -37,6 +37,17 @@ output "aws_bastion_public_fqdn" {
   value       = module.infra-aws.bastion_public_fqdn
 }
 
+output "aws_consul_ui_public_fqdn" {
+  description = "aws consul datacenter ui public fqdn"
+  value       = var.enable_hcp_consul == false ? "https://${module.consul-server-aws[0].aws_ui_public_fqdn}" : null
+}
+
+output "aws_consul_bootstrap_token" {
+  description = "aws consul acl bootstrap token"
+  value       = var.enable_hcp_consul == false ? module.consul-server-aws[0].bootstrap_token : null
+  sensitive   = true
+}
+
 // google gloud platform (gcp) outputs
 
 output "gcp_region" {
@@ -51,12 +62,12 @@ output "gcp_project_id" {
 
 output "gcp_consul_ui_public_fqdn" {
   description = "gcp consul datacenter ui public fqdn"
-  value       = var.enable_gcp == true ? module.consul-server-gcp.ui_public_fqdn[0] : null
+  value       = var.enable_gcp == true ? module.consul-server-gcp[0].gcp_ui_public_fqdn : null
 }
 
 output "gcp_consul_bootstrap_token" {
   description = "gcp consul acl bootstrap token"
-  value       = var.enable_gcp == true ? module.consul-server-gcp.bootstrap_token[0] : null
+  value       = var.enable_gcp == true ? module.consul-server-gcp[0].bootstrap_token : null
   sensitive   = true
 }
 
@@ -76,12 +87,12 @@ output "hcp_client_secret" {
 
 output "hcp_consul_public_fqdn" {
   description = "hcp consul public fqdn"
-  value       = module.consul-hcp.public_endpoint_url
+  value       = var.enable_hcp_consul == true ? module.consul-hcp[0].public_endpoint_url : null
 }
 
 output "hcp_consul_root_token" {
   description = "hcp consul root token"
-  value       = module.consul-hcp.root_token
+  value       = var.enable_hcp_consul == true ? module.consul-hcp[0].public_endpoint_url : null
   sensitive   = true
 }
 

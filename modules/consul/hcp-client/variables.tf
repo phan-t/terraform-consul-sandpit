@@ -3,6 +3,11 @@ variable "deployment_name" {
   type        = string
 }
 
+variable "cloud" {
+  description = "cloud provider"
+  type        = string
+}
+
 variable "helm_chart_version" {
   type        = string
   description = "Helm chart version"
