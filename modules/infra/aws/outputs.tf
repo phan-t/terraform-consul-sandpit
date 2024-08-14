@@ -45,3 +45,8 @@ output "eks_cluster_name" {
   description = "EKS cluster id"
   value       = module.eks.cluster_name
 }
+
+output "efs_file_system_id" {
+  description = "EFS file system id"
+  value       = aws_efs_file_system.eks-efs.id
+}

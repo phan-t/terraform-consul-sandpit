@@ -14,6 +14,9 @@ module "eks" {
     aws-ebs-csi-driver = {
       most_recent = true
     }
+    aws-efs-csi-driver = {
+      most_recent = true
+    }
   }
 
   eks_managed_node_group_defaults = { 
@@ -22,13 +25,13 @@ module "eks" {
   eks_managed_node_groups = {
     "default_node_group" = {
       min_size               = 1
-      max_size               = 4
+      max_size               = 5
       desired_size           = var.eks_worker_desired_capacity
 
       instance_types         = ["${var.eks_worker_instance_type}"]
       capacity_type          = var.eks_worker_capacity_type
       key_name               = module.key_pair.key_pair_name
-      vpc_security_group_ids = [module.sg-consul.security_group_id, module.sg-telemetry.security_group_id]
+      vpc_security_group_ids = [module.sg-consul.security_group_id, module.sg-telemetry.security_group_id, module.sg-efs.security_group_id]
 
       // extend default 20 gb volume size to 50 gb
       block_device_mappings = [
@@ -42,9 +45,10 @@ module "eks" {
         }
       ]
 
-      // required for aws-ebs-csi-driver
+      // required for aws-ebs-csi-driver and aws-efs-csi-driver
       iam_role_additional_policies = {
         AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+        AmazonEFSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
       }
     }
   }

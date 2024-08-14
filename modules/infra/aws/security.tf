@@ -152,3 +152,31 @@ module "sg-telemetry" {
     }
   ]
 }
+
+module "sg-efs" {
+  source = "terraform-aws-modules/security-group/aws"
+  version     = "4.9.0"
+
+  name        = "${var.deployment_id}-efs"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 2049
+      to_port     = 2049
+      protocol    = "tcp"
+      description = "efs-tcp"
+      cidr_blocks = "${module.vpc.vpc_cidr_block}"
+    }
+  ]
+
+  egress_with_cidr_blocks = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      description = "any-any"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+}
