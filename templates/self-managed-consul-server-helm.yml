@@ -31,6 +31,7 @@ server:
         "prometheus_retention_time": "72h"
       }
     }
+  storageClass: ${storageclass}
 dns:
   enabled: true
   enableRedirection: true

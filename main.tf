@@ -103,6 +103,8 @@ module "consul-server-aws" {
   serf_lan_port         = var.consul_serf_lan_port
   replicas              = var.consul_replicas
   cloud                 = "aws"
+  storageclass          = "efs"
+  efs_file_system_id    = module.infra-aws.efs_file_system_id
 
   depends_on = [
     module.infra-aws
@@ -127,6 +129,8 @@ module "consul-server-gcp" {
   serf_lan_port         = var.consul_serf_lan_port
   replicas              = var.consul_replicas
   cloud                 = "gcp"
+  storageclass          = ""
+  efs_file_system_id    = ""
 
   depends_on = [
     module.infra-gcp

@@ -32,3 +32,13 @@ variable "replicas" {
   description = "Number of replicas"
   type        = number
 }
+
+variable "storageclass" {
+  description = "kubernetes storage class"
+  type        = string
+}
+
+variable "efs_file_system_id" {
+  description = "aws efs file system id"
+  type        = string
+}

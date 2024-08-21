@@ -73,3 +73,21 @@ resource "kubernetes_storage_class" "gp3" {
     type      = "gp3"
   }
 }
+
+resource "kubernetes_storage_class" "efs" {
+  count = var.cloud == "aws" ? 1 : 0
+
+  metadata {
+    name = "efs"
+    annotations = {
+      "storageclass.kubernetes.io/is-default-class" : "false"
+    }
+  }
+  storage_provisioner    = "efs.csi.aws.com"
+  reclaim_policy         = "Delete"
+  parameters = {
+    provisioningMode = "efs-ap"
+    fileSystemId   = var.efs_file_system_id
+    directoryPerms = "700"
+  }
+}
