@@ -9,6 +9,16 @@ variable "namespace" {
   default     = "telemetry"
 }
 
+variable "aws_consul_token" {
+  description = "consul acl token"
+  type        = string
+}
+
+variable "enable_gcp" {
+  description = "deploy gcp"
+  type        = bool
+}
+
 variable "gcp_consul_token" {
   description = "consul acl token"
   type        = string

@@ -1,0 +1,154 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-configmap
+data:
+  k6: |
+    import http from 'k6/http';
+    import { uuidv4 } from "https://jslib.k6.io/k6-utils/1.0.0/index.js";
+    import { check, fail } from 'k6';
+
+    export default function() {
+
+      // global variables
+      const ipaddress = `https://consul-server.consul.svc.cluster.local:8501`;
+      const value = { data: uuidv4() };
+      const key = uuidv4();
+      
+      // Create KV entries
+      const kv_uri = '/v1/kv/';
+      const kv_address = `${ipaddress + kv_uri + key}`
+      let kvres = http.put(kv_address, JSON.stringify(value));
+      if (
+        !check(kvres, {
+          'kv status code MUST be 200': (kvres) => kvres.status == 200,
+        })
+      ) {
+        fail(`registry check status code was *not* 200. error: ${kvres.error}. body: ${kvres.body}`)
+      }
+
+      // Create ACL tokens
+      const acl_uri = '/v1/acl/token/';
+      const acl_address = `${ipaddress + acl_uri}`
+      const acl_json = '{"Description":"Agent token for api service","Policies":[{"Name":"builtin/global-read-only"}],"TemplatedPolicies":[{"TemplateName":"builtin/service","TemplateVariables":{"Name":"api"}}],"Local":false}';
+      let acl_data = JSON.parse(acl_json);
+      let aclres = http.put(acl_address, JSON.stringify(acl_data));
+      if (
+        !check(aclres, {
+          'acl status code MUST be 200': (aclres) => aclres.status == 200,
+        })
+      ) {
+        fail(`registry check status code was *not* 200. error: ${aclres.error}. body: ${aclres.body}`)
+      }
+
+      // Register services
+      const service_uri = '/v1/agent/service/register';
+      const service_address = `${ipaddress + service_uri }`
+      const service_json = '{"Address":"127.0.0.1","Port":8000,"Meta":{"redis_version":"4.0"}}';
+      let service_data = JSON.parse(service_json);
+      service_data["Name"] = key;
+      let servres = http.put(service_address, JSON.stringify(service_data));
+      if (
+        !check(servres, {
+          'register service status code MUST be 200': (servres) => servres.status == 200,
+        })
+      ) {
+        fail(`registry check status code was *not* 200. error: ${servres.error}. body: ${servres.body}`)
+      }
+
+      http.get('https://httpbin.test.k6.io/delay/6');
+
+    }
+
+    // With this open model executor config,
+    // new VU iterations will start at a rate of 1 every second,
+    // and we can thus expect to get 600 iterations completed
+    // for the full 10m test duration.
+
+    export const options = {
+      // open model k6 executor
+      scenarios: {
+        contacts: {
+          executor: 'constant-arrival-rate',
+          // rate that new VU iterations will start
+          rate: 10,
+          // time unit
+          timeUnit: '1s',
+          // virtual user count
+          preAllocatedVUs: 100,
+          // run duration
+          duration: "10m",
+          // 95% of requests must complete below 2.5s,
+          //thresholds: { http_req_duration: ["p(95)<2500"] },
+        },
+      },
+      insecureSkipTLSVerify: true
+    };
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul-load-test
+spec:
+  selector:
+    app: consul-load-test
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: consul-load-test
+automountServiceAccountToken: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consul-load-test
+  labels:
+    app: consul-load-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consul-load-test
+  template:
+    metadata:
+      labels:
+        app: consul-load-test
+      annotations:
+        consul.hashicorp.com/connect-inject: "true"
+        consul.hashicorp.com/transparent-proxy: "true"
+    spec:
+      serviceAccountName: consul-load-test
+      volumes:
+      - name: k6
+        configMap:
+          name: k6-configmap
+          items:
+          - key: k6
+            path: script.js
+      containers:
+      - name: load-test
+        image: loadimpact/k6
+        volumeMounts:
+          - name: k6
+            mountPath: /k6
+            readOnly: true
+        command:
+          - k6
+          - run
+          - /k6/script.js
+---
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceIntentions
+metadata:
+  name: consul-load-test-to-consul
+spec:
+  destination:
+    name: consul
+  sources:
+    - name: consul-load-test
+      action: allow

@@ -103,6 +103,8 @@ module "consul-server-aws" {
   serf_lan_port         = var.consul_serf_lan_port
   replicas              = var.consul_replicas
   cloud                 = "aws"
+  storageclass          = "gp3"
+  efs_file_system_id    = module.infra-aws.efs_file_system_id
 
   depends_on = [
     module.infra-aws
@@ -127,6 +129,8 @@ module "consul-server-gcp" {
   serf_lan_port         = var.consul_serf_lan_port
   replicas              = var.consul_replicas
   cloud                 = "gcp"
+  storageclass          = ""
+  efs_file_system_id    = ""
 
   depends_on = [
     module.infra-gcp
@@ -172,7 +176,9 @@ module "telemetry" {
   count = var.enable_telemetry ? 1 : 0
 
   deployment_name                            = var.deployment_name
-  gcp_consul_token                           = var.enable_gcp == true ? module.consul-server-gcp.bootstrap_token[0] : ""
+  aws_consul_token                           = module.consul-server-aws[0].bootstrap_token
+  enable_gcp                                 = var.enable_gcp
+  gcp_consul_token                           = var.enable_gcp == true ? module.consul-server-gcp[0].bootstrap_token : ""
   splunk_operator_helm_chart_version         = var.splunk_operator_helm_chart_version
   prometheus_helm_chart_version              = var.prometheus_helm_chart_version
   grafana_helm_chart_version                 = var.grafana_helm_chart_version

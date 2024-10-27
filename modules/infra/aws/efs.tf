@@ -1,6 +1,9 @@
 resource "aws_efs_file_system" "eks-efs" {
   creation_token = "eks-efs"
   encrypted      = true  
+
+  # provisioned_throughput_in_mibps = "1000"
+  # throughput_mode = "provisioned"
   
   tags = {
     Name = var.deployment_id

@@ -93,7 +93,7 @@ variable "aws_eks_cluster_version" {
 variable "aws_eks_worker_instance_type" {
   description = "aws eks ec2 worker node instance type"
   type        = string
-  default     = "m6i.large"
+  default     = "m6i.xlarge"
 }
 
 variable "aws_eks_worker_capacity_type" {
@@ -157,7 +157,7 @@ variable "consul_ent_license" {
 variable "consul_replicas" {
   description = "consul replicas"
   type        = number
-  default     = 5
+  default     = 1
 }
 
 variable "consul_serf_lan_port" {
