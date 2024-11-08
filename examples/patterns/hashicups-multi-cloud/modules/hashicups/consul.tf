@@ -20,12 +20,49 @@ resource "kubernetes_namespace" "gke-hashicups-namespaces" {
   }
 }
 
+// create admin partition on aws consul server
+
+resource "consul_admin_partition" "eks-hashicups" {
+  provider = consul.aws
+
+  name        = "hashicups"
+  description = "Partition for hashicups team"
+}
+
+// create admin partition on gcp consul server
+
+resource "consul_admin_partition" "gke-hashicups" {
+  provider = consul.gcp
+
+  name        = "hashicups"
+  description = "Partition for hashicups team"
+}
+
+// create hashicups partition cluster peering token for aws and gcp
+
+resource "consul_peering_token" "aws-gcp-hashicups" {
+  provider = consul.aws
+
+  peer_name = "aws-gcp-hashicups"
+  partition = consul_admin_partition.eks-hashicups.name
+}
+
+// create hashicups partition cluster peering connection between aws and gcp
+
+resource "consul_peering" "aws-gcp-hashicups" {
+  provider = consul.gcp
+
+  peer_name     = "aws-gcp-hashicups"
+  peering_token = consul_peering_token.aws-gcp-hashicups.peering_token
+  partition     = consul_admin_partition.gke-hashicups.name
+}
+
 resource "consul_config_entry" "eks-proxy_defaults" {
-  provider = consul.hcp
+  provider = consul.aws
 
   kind        = "proxy-defaults"
   name        = "global"
-  partition   = "hashicups"
+  partition   = consul_admin_partition.eks-hashicups.name
 
   config_json = jsonencode({
     Config = {
@@ -39,7 +76,7 @@ resource "consul_config_entry" "gke-proxy_defaults" {
 
   kind        = "proxy-defaults"
   name        = "global"
-  partition   = "hashicups"
+  partition   = consul_admin_partition.gke-hashicups.name
 
   config_json = jsonencode({
     Config = {

@@ -105,7 +105,7 @@ resource "kubernetes_deployment" "product-api-db" {
 }
 
 resource "consul_config_entry" "sd-product-api-db" {
-  provider = consul.hcp
+  provider = consul.aws
 
   kind        = "service-defaults"
   name        = "product-api-db"
@@ -122,7 +122,7 @@ resource "consul_config_entry" "sd-product-api-db" {
 }
 
 resource "consul_config_entry" "si-product-api-db" {
-  provider = consul.hcp
+  provider = consul.aws
 
   name        = "product-api-db"
   kind        = "service-intentions"

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.20.0"
+      version = "~> 5.74.0"
     }
     google = {
       source  = "hashicorp/google"
@@ -16,20 +16,11 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.5.0"
     }
-    hcp = {
-      source = "hashicorp/hcp"
-      version = "~> 0.72.0"
-    }
     consul = {
       source  = "hashicorp/consul"
       version = "~> 2.18.0"
     }
   }
-}
-
-provider "hcp" {
-  client_id     = data.terraform_remote_state.tcm.outputs.hcp_client_id
-  client_secret = data.terraform_remote_state.tcm.outputs.hcp_client_secret
 }
 
 provider "aws" {
@@ -46,7 +37,11 @@ data "aws_eks_cluster" "default" {
 }
 
 data "aws_eks_cluster" "hashicups" {
-  name = module.infra-aws.eks_cluster_id
+  name = module.infra-aws.eks_cluster_name
+
+  depends_on = [ 
+    module.infra-aws 
+  ]
 }
 
 provider "kubernetes" {
@@ -128,11 +123,12 @@ provider "helm" {
 }
 
 provider "consul" {
-  alias = "hcp"
-  address        = data.terraform_remote_state.tcm.outputs.hcp_consul_public_fqdn
+  alias = "aws"
+  address        = data.terraform_remote_state.tcm.outputs.aws_consul_ui_public_fqdn
   scheme         = "https"
-  datacenter     = "${data.terraform_remote_state.tcm.outputs.deployment_name}-hcp"
-  token          = data.terraform_remote_state.tcm.outputs.hcp_consul_root_token
+  datacenter     = "${data.terraform_remote_state.tcm.outputs.deployment_name}-aws"
+  token          = data.terraform_remote_state.tcm.outputs.aws_consul_bootstrap_token
+  insecure_https = true
 }
 
 provider "consul" {

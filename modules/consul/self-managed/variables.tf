@@ -33,6 +33,11 @@ variable "replicas" {
   type        = number
 }
 
+variable "peering_token" {
+  description = "consul default partition peering token"
+  type        = string
+}
+
 variable "storageclass" {
   description = "kubernetes storage class"
   type        = string

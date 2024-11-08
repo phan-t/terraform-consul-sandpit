@@ -62,7 +62,7 @@ output "gcp_project_id" {
 
 output "gcp_consul_ui_public_fqdn" {
   description = "gcp consul datacenter ui public fqdn"
-  value       = var.enable_gcp == true ? module.consul-server-gcp[0].gcp_ui_public_fqdn : null
+  value       = var.enable_gcp == true ? "https://${module.consul-server-gcp[0].gcp_ui_public_fqdn}" : null
 }
 
 output "gcp_consul_bootstrap_token" {
@@ -85,16 +85,16 @@ output "hcp_client_secret" {
   sensitive   = true
 }
 
-output "hcp_consul_public_fqdn" {
-  description = "hcp consul public fqdn"
-  value       = var.enable_hcp_consul == true ? module.consul-hcp[0].public_endpoint_url : null
-}
+# output "hcp_consul_public_fqdn" {
+#   description = "hcp consul public fqdn"
+#   value       = var.enable_hcp_consul == true ? module.consul-hcp[0].public_endpoint_url : null
+# }
 
-output "hcp_consul_root_token" {
-  description = "hcp consul root token"
-  value       = var.enable_hcp_consul == true ? module.consul-hcp[0].public_endpoint_url : null
-  sensitive   = true
-}
+# output "hcp_consul_root_token" {
+#   description = "hcp consul root token"
+#   value       = var.enable_hcp_consul == true ? module.consul-hcp[0].public_endpoint_url : null
+#   sensitive   = true
+# }
 
 output "hcp_vault_public_fqdn" {
   description = "HCP vault public fqdn"

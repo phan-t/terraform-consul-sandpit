@@ -1,6 +1,6 @@
 resource "local_file" "payments-api-config" {
-  content = templatefile("${path.root}/examples/templates/payments-api-config.yml", {
-    jaeger_collector_fqdn = ""
+  content = templatefile("${path.root}/templates/payments-api-config.yml", {
+    # jaeger_collector_fqdn = ""
     })
   filename = "${path.module}/config-maps/payments-api-config.yml.tmp"
 }

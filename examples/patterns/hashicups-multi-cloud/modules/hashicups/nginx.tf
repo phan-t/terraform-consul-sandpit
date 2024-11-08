@@ -125,7 +125,7 @@ resource "kubernetes_deployment" "nginx" {
 }
 
 resource "consul_config_entry" "si-nginx" {
-  provider = consul.hcp
+  provider = consul.aws
 
   name        = "nginx"
   kind        = "service-intentions"

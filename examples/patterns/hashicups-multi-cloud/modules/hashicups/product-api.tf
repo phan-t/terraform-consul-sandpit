@@ -130,7 +130,7 @@ resource "kubernetes_deployment" "product-api" {
 }
 
 resource "consul_config_entry" "si-product-api" {
-  provider = consul.hcp
+  provider = consul.aws
 
   name        = "product-api"
   kind        = "service-intentions"

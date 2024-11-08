@@ -7,7 +7,7 @@ terraform {
       configuration_aliases = [ helm.eks-hashicups, helm.gke-hashicups ]
     }
     consul = {
-      configuration_aliases = [ consul.hcp, consul.gcp ]
+      configuration_aliases = [ consul.aws, consul.gcp ]
     }
   }
 }

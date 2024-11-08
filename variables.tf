@@ -93,19 +93,19 @@ variable "aws_eks_cluster_version" {
 variable "aws_eks_worker_instance_type" {
   description = "aws eks ec2 worker node instance type"
   type        = string
-  default     = "m6i.xlarge"
+  default     = "m6i.large"
 }
 
 variable "aws_eks_worker_capacity_type" {
   description = "aws eks ec2 worker node capacity type"
   type        = string
-  default     = "SPOT"
+  default     = "ON_DEMAND"
 }
 
 variable "aws_eks_worker_desired_capacity" {
   description = "aws eks desired worker autoscaling group capacity"
   type        = number
-  default     = 3
+  default     = 2
 }
 
 // google cloud platform (gcp) variables

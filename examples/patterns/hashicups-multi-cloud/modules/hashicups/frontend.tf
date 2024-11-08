@@ -88,7 +88,7 @@ resource "kubernetes_deployment" "frontend" {
 }
 
 resource "consul_config_entry" "si-frontend" {
-  provider = consul.hcp
+  provider = consul.aws
 
   name        = "frontend"
   kind        = "service-intentions"

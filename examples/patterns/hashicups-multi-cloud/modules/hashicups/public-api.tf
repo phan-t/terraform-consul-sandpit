@@ -106,7 +106,7 @@ resource "kubernetes_deployment" "public-api" {
 }
 
 resource "consul_config_entry" "si-public-api" {
-  provider = consul.hcp
+  provider = consul.aws
 
   name        = "public-api"
   kind        = "service-intentions"

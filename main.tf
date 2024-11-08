@@ -92,6 +92,7 @@ module "consul-server-aws" {
   providers = {
     kubernetes = kubernetes.eks
     helm       = helm.eks
+    consul     = consul.aws
    }
 
   count = var.enable_hcp_consul ? 0 : 1
@@ -103,6 +104,7 @@ module "consul-server-aws" {
   serf_lan_port         = var.consul_serf_lan_port
   replicas              = var.consul_replicas
   cloud                 = "aws"
+  peering_token         = ""
   storageclass          = "gp3"
   efs_file_system_id    = module.infra-aws.efs_file_system_id
 
@@ -118,6 +120,7 @@ module "consul-server-gcp" {
   providers = {
     kubernetes = kubernetes.gke
     helm       = helm.gke
+    consul     = consul.gcp
    }
 
   count = var.enable_gcp ? 1 : 0
@@ -129,11 +132,12 @@ module "consul-server-gcp" {
   serf_lan_port         = var.consul_serf_lan_port
   replicas              = var.consul_replicas
   cloud                 = "gcp"
+  peering_token         = module.consul-server-aws[0].peering_token
   storageclass          = ""
   efs_file_system_id    = ""
 
   depends_on = [
-    module.infra-gcp
+    module.infra-gcp,
   ]
 }
 

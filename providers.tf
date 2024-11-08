@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.60.0"
+      version = "~> 5.74.0"
     }
     google = {
       source  = "hashicorp/google"
@@ -106,9 +106,9 @@ provider "consul" {
 
 provider "consul" {
   alias = "gcp"
-  address        = "https://${module.consul-server-gcp.gcp_ui_public_fqdn}"
+  address        = "https://${module.consul-server-gcp[0].gcp_ui_public_fqdn}"
   scheme         = "https"
   datacenter     = "${var.deployment_name}-gcp"
-  token          = module.consul-server-gcp.bootstrap_token
+  token          = module.consul-server-gcp[0].bootstrap_token
   insecure_https = true
 }
