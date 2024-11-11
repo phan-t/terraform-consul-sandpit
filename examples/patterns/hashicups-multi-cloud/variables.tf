@@ -24,6 +24,12 @@ variable "aws_eks_worker_instance_type" {
   default     = "m6i.large"
 }
 
+variable "aws_eks_worker_capacity_type" {
+  description = "aws eks ec2 worker node capacity type"
+  type        = string
+  default     = "SPOT"
+}
+
 variable "aws_eks_worker_desired_capacity" {
   description = "AWS EKS desired worker capacity in the autoscaling group"
   type        = number

@@ -26,6 +26,7 @@ module "infra-aws" {
   eks_cluster_version         = var.aws_eks_cluster_version
   eks_cluster_service_cidr    = var.aws_eks_cluster_service_cidr
   eks_worker_instance_type    = var.aws_eks_worker_instance_type
+  eks_worker_capacity_type    = var.aws_eks_worker_capacity_type
   eks_worker_desired_capacity = var.aws_eks_worker_desired_capacity
 }
 
@@ -61,6 +62,11 @@ module "consul-clients-hashicups" {
   replicas                    = var.consul_replicas
   eks_kubernetes_api_endpoint = data.aws_eks_cluster.hashicups.endpoint
   gke_kubernetes_api_endpoint = module.infra-gcp.cluster_api_endpoint
+
+  depends_on = [ 
+    module.infra-aws, 
+    module.infra-gcp 
+  ]
 }
 
 # // hcp consul

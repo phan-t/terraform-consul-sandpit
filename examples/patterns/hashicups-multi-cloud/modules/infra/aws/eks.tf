@@ -32,7 +32,7 @@ module "eks" {
       desired_size           = var.eks_worker_desired_capacity
 
       instance_types         = ["${var.eks_worker_instance_type}"]
-      capacity_type          = "ON_DEMAND"
+      capacity_type          = var.eks_worker_capacity_type
       key_name               = var.key_pair_key_name
       vpc_security_group_ids = data.aws_security_groups.consul.ids
     }
