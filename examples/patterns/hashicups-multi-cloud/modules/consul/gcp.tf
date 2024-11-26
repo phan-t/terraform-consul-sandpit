@@ -116,3 +116,21 @@ resource "helm_release" "gke-consul-client-hashicups" {
     kubernetes_namespace.gke-consul
   ]
 }
+
+// deploy opentelemetry collector on hashicups gke cluster
+
+resource "helm_release" "gke-opentelemetry-self-managed-hashicups" {
+  provider = helm.gke-hashicups
+
+  count = var.enable_telemetry ? 1 : 0
+
+  name             = "${var.deployment_name}-opentelemetry-collector"
+  chart            = "opentelemetry-collector"
+  repository       = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+  version          = var.opentelemetry_collector_helm_chart_version
+  namespace        = "telemetry"
+  create_namespace = true
+  timeout          = "300"
+  wait             = true
+  values           = [ file("../../../modules/telemetry/opentelemetry/configs/gke-opentelemetry-collector-self-managed-helm-values.yml.tmp")]
+}

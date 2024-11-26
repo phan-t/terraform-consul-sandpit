@@ -107,6 +107,7 @@ module "consul-server-aws" {
   peering_token         = ""
   storageclass          = "gp3"
   efs_file_system_id    = module.infra-aws.efs_file_system_id
+  prometheus_fqdn       = "http://prometheus.tphan.sbx.hashidemos.io/"
 
   depends_on = [
     module.infra-aws
@@ -135,6 +136,7 @@ module "consul-server-gcp" {
   peering_token         = module.consul-server-aws[0].peering_token
   storageclass          = ""
   efs_file_system_id    = ""
+  prometheus_fqdn       = ""
 
   depends_on = [
     module.infra-gcp,
@@ -171,6 +173,7 @@ module "consul-client-aws" {
 module "telemetry" {
   source    = "./modules/telemetry"
   providers = {
+    aws            = aws
     kubernetes.eks = kubernetes.eks
     kubernetes.gke = kubernetes.gke
     helm.eks       = helm.eks
@@ -180,6 +183,7 @@ module "telemetry" {
   count = var.enable_telemetry ? 1 : 0
 
   deployment_name                            = var.deployment_name
+  aws_route53_zone_name                      = "${var.aws_route53_sandbox_prefix}.sbx.hashidemos.io"
   aws_consul_token                           = module.consul-server-aws[0].bootstrap_token
   enable_gcp                                 = var.enable_gcp
   gcp_consul_token                           = var.enable_gcp == true ? module.consul-server-gcp[0].bootstrap_token : ""

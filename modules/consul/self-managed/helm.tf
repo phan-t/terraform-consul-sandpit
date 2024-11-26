@@ -6,6 +6,7 @@ resource "local_file" "consul-server-helm-values" {
     serf_lan_port         = var.serf_lan_port
     cloud                 = var.cloud
     storageclass          = var.storageclass
+    prometheus_fqdn       = var.prometheus_fqdn
     })
   filename = "${path.module}/${var.cloud}-server-helm-values.yml.tmp"
 }

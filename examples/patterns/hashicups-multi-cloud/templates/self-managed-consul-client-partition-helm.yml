@@ -43,22 +43,12 @@ connectInject:
     managedGatewayClass:
       serviceType: LoadBalancer
   metrics:
-    defaultEnableMerging: true
+    defaultEnableMerging: false
   consulNamespaces:
     mirroringK8S: true  
 meshGateway:
   enabled: true
   replicas: ${replicas}
-ingressGateways:
-  enabled: true
-  defaults:
-    replicas: ${replicas}
-    service:
-      type: LoadBalancer
-      ports:
-        - port: 80
-  gateways:
-    - name: ${cloud}-ingress-gateway
 terminatingGateways:
   enabled: true
   defaults:

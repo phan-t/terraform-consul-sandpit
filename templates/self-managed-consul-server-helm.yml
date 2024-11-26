@@ -45,13 +45,15 @@ dns:
 ui:
   service:
     type: LoadBalancer
+  metrics:
+    baseURL: ${prometheus_fqdn}
 connectInject:
   enabled: true
   apiGateway:
     managedGatewayClass:
       serviceType: LoadBalancer
   metrics:
-    defaultEnableMerging: true
+    defaultEnableMerging: false
   consulNamespaces:
     mirroringK8S: true  
 controller:

@@ -9,6 +9,11 @@ variable "namespace" {
   default     = "telemetry"
 }
 
+variable "aws_route53_zone_name" {
+  description = "aws route53 zone name"
+  type        = string
+}
+
 variable "aws_consul_token" {
   description = "consul acl token"
   type        = string

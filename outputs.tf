@@ -73,17 +73,17 @@ output "gcp_consul_bootstrap_token" {
 
 // hashicorp cloud platform (hcp) outputs
 
-output "hcp_client_id" {
-  description = "hcp client id"
-  value       = var.hcp_client_id
-  sensitive   = true
-}
+# output "hcp_client_id" {
+#   description = "hcp client id"
+#   value       = var.hcp_client_id
+#   sensitive   = true
+# }
 
-output "hcp_client_secret" {
-  description = "hcp client secret"
-  value       = var.hcp_client_secret
-  sensitive   = true
-}
+# output "hcp_client_secret" {
+#   description = "hcp client secret"
+#   value       = var.hcp_client_secret
+#   sensitive   = true
+# }
 
 # output "hcp_consul_public_fqdn" {
 #   description = "hcp consul public fqdn"
@@ -115,6 +115,11 @@ output "consul_helm_chart_version" {
 }
 
 // telemetry outputs
+
+output "enable_telemetry" {
+  description = "deploy telemetry services"
+  value       = var.enable_telemetry
+}
 
 output "splunk_public_fqdn" {
   description = "splunk service public fqdn"

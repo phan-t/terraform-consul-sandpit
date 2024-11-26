@@ -13,16 +13,6 @@ variable "vpc_cidr" {
   type        = string
 }
 
-# variable "public_subnets" {
-#   description = "Public subnets"
-#   type        = list
-# }
-
-# variable "private_subnets" {
-#   description = "Private subnets"
-#   type        = list
-# }
-
 variable "eks_cluster_version" {
   description = "EKS cluster version"
   type        = string

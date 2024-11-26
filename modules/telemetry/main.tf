@@ -22,6 +22,7 @@ module "prometheus-aws" {
    }
 
   deployment_name    = var.deployment_name
+  route53_zone_name  = var.aws_route53_zone_name
   namespace          = var.namespace
   helm_chart_version = var.prometheus_helm_chart_version
 }
@@ -54,6 +55,7 @@ module "opentelemetry-eks" {
   collector_name            = "eks"
   helm_chart_version        = var.opentelemetry_collector_helm_chart_version
   consul_platform_type      = "self-managed"
+  consul_datacenter         = "${var.deployment_name}-aws"
   consul_token              = var.aws_consul_token
   splunk_hec_endpoint       = module.splunk-enterprise-aws.public_fqdn
   splunk_hec_token          = module.splunk-enterprise-aws.hec_token
@@ -76,6 +78,7 @@ module "opentelemetry-gke" {
   collector_name                   = "gke"
   helm_chart_version               = var.opentelemetry_collector_helm_chart_version
   consul_platform_type             = "self-managed"
+  consul_datacenter                = "${var.deployment_name}-gcp"
   consul_token                     = var.gcp_consul_token
   prometheus_remote_write_endpoint = module.prometheus-aws.public_fqdn
   splunk_hec_endpoint              = module.splunk-enterprise-aws.public_fqdn

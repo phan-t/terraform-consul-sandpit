@@ -78,6 +78,11 @@ variable "aws_region" {
   default     = ""
 }
 
+variable "aws_route53_sandbox_prefix" {
+  description = "aws route53 sandbox account prefix"
+  type        = string
+}
+
 variable "aws_vpc_cidr" {
   description = "aws vpc cidr"
   type        = string

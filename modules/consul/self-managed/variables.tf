@@ -47,3 +47,8 @@ variable "efs_file_system_id" {
   description = "aws efs file system id"
   type        = string
 }
+
+variable "prometheus_fqdn" {
+  description = "prometheus fqdn"
+  type        = string
+}

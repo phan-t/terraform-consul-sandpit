@@ -56,41 +56,20 @@ module "consul-clients-hashicups" {
     consul.gcp               = consul.gcp
    } 
 
-  deployment_name             = data.terraform_remote_state.tcm.outputs.deployment_name
-  min_version                 = data.terraform_remote_state.tcm.outputs.consul_version
-  helm_chart_version          = data.terraform_remote_state.tcm.outputs.consul_helm_chart_version
-  replicas                    = var.consul_replicas
-  eks_kubernetes_api_endpoint = data.aws_eks_cluster.hashicups.endpoint
-  gke_kubernetes_api_endpoint = module.infra-gcp.cluster_api_endpoint
+  deployment_name                            = data.terraform_remote_state.tcm.outputs.deployment_name
+  min_version                                = data.terraform_remote_state.tcm.outputs.consul_version
+  helm_chart_version                         = data.terraform_remote_state.tcm.outputs.consul_helm_chart_version
+  replicas                                   = var.consul_replicas
+  eks_kubernetes_api_endpoint                = data.aws_eks_cluster.hashicups.endpoint
+  gke_kubernetes_api_endpoint                = module.infra-gcp.cluster_api_endpoint
+  enable_telemetry                           = data.terraform_remote_state.tcm.outputs.enable_telemetry
+  opentelemetry_collector_helm_chart_version = var.opentelemetry_collector_helm_chart_version
 
   depends_on = [ 
     module.infra-aws, 
     module.infra-gcp 
   ]
 }
-
-# // hcp consul
-
-# module "consul" {
-#   source = "./modules/consul"
-#   providers = {
-#     kubernetes.eks           = kubernetes.eks
-#     kubernetes.eks-hashicups = kubernetes.eks-hashicups
-#     kubernetes.gke           = kubernetes.gke
-#     kubernetes.gke-hashicups = kubernetes.gke-hashicups
-#     helm.eks-hashicups       = helm.eks-hashicups
-#     helm.gke-hashicups       = helm.gke-hashicups
-#     consul.hcp               = consul.hcp
-#     consul.gcp               = consul.gcp
-#    } 
-
-#   deployment_name             = data.terraform_remote_state.tcm.outputs.deployment_name
-#   min_version                 = data.terraform_remote_state.tcm.outputs.consul_version
-#   helm_chart_version          = data.terraform_remote_state.tcm.outputs.consul_helm_chart_version
-#   replicas                    = var.consul_replicas
-#   eks_kubernetes_api_endpoint = data.aws_eks_cluster.hashicups.endpoint
-#   gke_kubernetes_api_endpoint = module.infra-gcp.cluster_api_endpoint
-# }
 
 // hashicups
 

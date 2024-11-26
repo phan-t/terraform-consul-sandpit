@@ -1,5 +1,7 @@
 terraform {
   required_providers {
+    aws = {
+    }
     kubernetes = {
       configuration_aliases = [ kubernetes.eks, kubernetes.gke]
     }

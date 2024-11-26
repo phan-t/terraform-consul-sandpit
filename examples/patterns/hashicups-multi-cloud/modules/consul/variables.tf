@@ -27,3 +27,13 @@ variable "gke_kubernetes_api_endpoint" {
   description = "Kubernetes api endpoint"
   type        = string
 }
+
+variable "enable_telemetry" {
+  description = "deploy telemetry services"
+  type        = bool
+}
+
+variable "opentelemetry_collector_helm_chart_version" {
+  description = "helm chart version"
+  type        = string
+}

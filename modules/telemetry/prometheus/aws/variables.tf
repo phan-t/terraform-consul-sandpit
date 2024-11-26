@@ -3,6 +3,11 @@ variable "deployment_name" {
   type        = string
 }
 
+variable "route53_zone_name" {
+  description = "aws route53 zone name"
+  type        = string
+}
+
 variable "namespace" {
   description = "kubernetes namespace"
   type        = string

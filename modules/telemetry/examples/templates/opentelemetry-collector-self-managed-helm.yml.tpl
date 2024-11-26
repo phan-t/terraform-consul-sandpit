@@ -39,48 +39,54 @@ config:
         global:
           scrape_interval: "60s"
         scrape_configs:
-          - job_name: "self-managed-consul-cluster"
-            metrics_path: "/v1/agent/metrics"
-            scheme: "https"
-            authorization:
-              credentials: "${consul_token}"
-            tls_config:
-              insecure_skip_verify: true
+          # - job_name: "self-managed-consul-cluster"
+          #   metrics_path: "/v1/agent/metrics"
+          #   scheme: "https"
+          #   authorization:
+          #     credentials: "${consul_token}"
+          #   tls_config:
+          #     insecure_skip_verify: true
+          #   kubernetes_sd_configs:
+          #     - role: pod
+          #   relabel_configs:
+          #     - source_labels: [__meta_kubernetes_pod_label_app]
+          #       action: keep
+          #       regex: consul
+          #     - source_labels: [__meta_kubernetes_pod_label_component]
+          #       action: keep
+          #       regex: server
+          #     - source_labels: [__meta_kubernetes_pod_container_port_number]
+          #       action: keep
+          #       regex: 8501
+          - job_name: "kubernetes-pods"
+            scrape_interval: 10s
             kubernetes_sd_configs:
               - role: pod
             relabel_configs:
-              - source_labels: [__meta_kubernetes_pod_label_app]
-                regex: consul
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
                 action: keep
-              - source_labels: [__meta_kubernetes_pod_label_component]
-                regex: server
-                action: keep
-              - source_labels: [__meta_kubernetes_pod_container_port_number]
-                regex: 8501
-                action: keep
-          - job_name: envoy-metrics
-            consul_sd_configs:
-              - server: "consul.service.consul:8501"
-                scheme: "https"
-                datacenter: ${consul_datacenter}
-                tls_config:
-                  insecure_skip_verify: true
-            relabel_configs:
-              - source_labels:
-                  - __meta_consul_service
-                action: drop
-                regex: (.+)-sidecar-proxy
-              - source_labels:
-                  - __meta_consul_service_metadata_metrics_port
-                action: keep
+                regex: true
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_metric_path]
+                action: replace
+                target_label: __metrics_path__
                 regex: (.+)
-              - source_labels:
-                  - __meta_consul_address
-                  - __meta_consul_service_metadata_metrics_port
-                regex: (.+);(\d+)
-                replacement: ${1}:${2}
+              - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_scrape_port]
+                action: replace
+                regex: ([^:]+)(?::\d+)?;(\d+)
+                replacement: $1:$2
                 target_label: __address__
+              - action: labelmap
+                regex: __meta_kubernetes_pod_label_(.+)
+              - source_labels: [__meta_kubernetes_namespace]
+                action: replace
+                target_label: namespace
+              - source_labels: [__meta_kubernetes_pod_name]
+                action: replace
+                target_label: pod
   service:
+    # telemetry:
+    #   logs:
+    #     level: DEBUG
     pipelines:
       logs:
         exporters:

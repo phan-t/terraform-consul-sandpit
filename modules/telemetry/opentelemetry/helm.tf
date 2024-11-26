@@ -40,7 +40,7 @@ resource "local_file" "opentelemetry-collector-self-managed-helm-values" {
     hec_endpoint                     = var.splunk_hec_endpoint
     hec_token                        = var.splunk_hec_token
     })
-  filename = "${path.module}/${var.collector_name}-opentelemetry-collector-${var.consul_platform_type}-helm-values.yml.tmp"
+  filename = "${path.module}/configs/${var.collector_name}-opentelemetry-collector-${var.consul_platform_type}-helm-values.yml.tmp"
 }
 
 resource "helm_release" "opentelemetry-self-managed" {

@@ -117,3 +117,21 @@ resource "helm_release" "eks-consul-client-hashicups" {
     kubernetes_namespace.eks-consul
   ]
 }
+
+// deploy opentelemetry collector on hashicups eks cluster
+
+resource "helm_release" "eks-opentelemetry-self-managed-hashicups" {
+  provider = helm.eks-hashicups
+
+  count = var.enable_telemetry ? 1 : 0
+
+  name             = "${var.deployment_name}-opentelemetry-collector"
+  chart            = "opentelemetry-collector"
+  repository       = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+  version          = var.opentelemetry_collector_helm_chart_version
+  namespace        = "telemetry"
+  create_namespace = true
+  timeout          = "300"
+  wait             = true
+  values           = [ file("../../../modules/telemetry/opentelemetry/configs/eks-opentelemetry-collector-self-managed-helm-values.yml.tmp")]
+}

@@ -51,3 +51,11 @@ variable "consul_replicas" {
   type        = number
   default     = 1
 }
+
+// telemetry variables
+
+variable "opentelemetry_collector_helm_chart_version" {
+  description = "helm chart version"
+  type        = string
+  default     = "0.72.0"
+}
