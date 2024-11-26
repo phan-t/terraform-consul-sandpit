@@ -34,6 +34,7 @@ resource "local_file" "opentelemetry-collector-self-managed-helm-values" {
 
   content = templatefile("${path.root}/modules/telemetry/examples/templates/opentelemetry-collector-${var.consul_platform_type}-helm.yml.tpl", {
     name                             = var.collector_name
+    consul_datacenter                = var.consul_datacenter
     consul_token                     = var.consul_token
     prometheus_remote_write_endpoint = var.prometheus_remote_write_endpoint
     hec_endpoint                     = var.splunk_hec_endpoint

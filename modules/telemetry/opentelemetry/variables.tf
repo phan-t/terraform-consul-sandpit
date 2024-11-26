@@ -26,6 +26,11 @@ variable "consul_platform_type" {
   }
 }
 
+variable "consul_datacenter" {
+  description = "consul_datacenter"
+  type        = string
+}
+
 variable "consul_token" {
   description = "consul acl token"
   type = string

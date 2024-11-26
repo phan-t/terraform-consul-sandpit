@@ -58,6 +58,28 @@ config:
               - source_labels: [__meta_kubernetes_pod_container_port_number]
                 regex: 8501
                 action: keep
+          - job_name: envoy-metrics
+            consul_sd_configs:
+              - server: "consul.service.consul:8501"
+                scheme: "https"
+                datacenter: ${consul_datacenter}
+                tls_config:
+                  insecure_skip_verify: true
+            relabel_configs:
+              - source_labels:
+                  - __meta_consul_service
+                action: drop
+                regex: (.+)-sidecar-proxy
+              - source_labels:
+                  - __meta_consul_service_metadata_metrics_port
+                action: keep
+                regex: (.+)
+              - source_labels:
+                  - __meta_consul_address
+                  - __meta_consul_service_metadata_metrics_port
+                regex: (.+);(\d+)
+                replacement: ${1}:${2}
+                target_label: __address__
   service:
     pipelines:
       logs:
