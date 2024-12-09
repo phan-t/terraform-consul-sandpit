@@ -106,9 +106,9 @@ provider "consul" {
 
 provider "consul" {
   alias = "gcp"
-  address        = "https://${module.consul-server-gcp[0].gcp_ui_public_fqdn}"
+  address        = var.enable_gcp == true ? "https://${module.consul-server-gcp[0].gcp_ui_public_fqdn}" : null
   scheme         = "https"
   datacenter     = "${var.deployment_name}-gcp"
-  token          = module.consul-server-gcp[0].bootstrap_token
+  token          = var.enable_gcp == true ? module.consul-server-gcp[0].bootstrap_token : null
   insecure_https = true
 }
