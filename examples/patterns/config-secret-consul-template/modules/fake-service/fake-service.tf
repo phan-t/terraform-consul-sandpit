@@ -1,10 +1,10 @@
 // create kv on consul cluster
 
-resource "consul_keys" "fake-service" {
+resource "consul_keys" "service-a" {
   provider = consul.hcp
 
   key {
-    path   = "app/fake-service/logging/loglevel"
+    path   = "app/service-a/logging/loglevel"
     value  = "info"
     delete = true
   }
@@ -12,11 +12,11 @@ resource "consul_keys" "fake-service" {
 
 // create secret on vault cluster
 
-resource "vault_kv_secret_v2" "fake-service" {
+resource "vault_kv_secret_v2" "service-a" {
   provider = vault.hcp
 
   mount                      = "app"
-  name                       = "fake-service/database"
+  name                       = "service-a/database"
   delete_all_versions        = true
   data_json                  = jsonencode(
   {
@@ -37,19 +37,19 @@ resource "kubernetes_namespace" "fake-service" {
   }
 }
 
-resource "kubernetes_service" "fake-service" {
+resource "kubernetes_service" "service-a" {
   provider = kubernetes.eks
 
   metadata {
-    name = "fake-service"
+    name = "service-a"
     namespace = "fake-service"
     labels = {
-        app = "fake-service"
+        app = "service-a"
     }
   }
   spec {
     selector = {
-      app = "fake-service"
+      app = "service-a"
     }
     port {
       port        = 9090
@@ -63,7 +63,7 @@ resource "kubernetes_service" "fake-service" {
   ]
 }
 
-resource "kubernetes_config_map" "fake-service" {
+resource "kubernetes_config_map" "service-a" {
   provider = kubernetes.eks
 
   metadata {
@@ -80,11 +80,11 @@ resource "kubernetes_config_map" "fake-service" {
   ]
 }
 
-resource "kubernetes_service_account" "fake-service" {
+resource "kubernetes_service_account" "service-a" {
   provider = kubernetes.eks
 
   metadata {
-    name = "fake-service"
+    name = "service-a"
     namespace = "fake-service"
   }
   automount_service_account_token = true
@@ -94,11 +94,11 @@ resource "kubernetes_service_account" "fake-service" {
   ]
 }
 
-resource "kubernetes_deployment" "fake-service" {
+resource "kubernetes_deployment" "service-a" {
   provider = kubernetes.eks
 
   metadata {
-    name = "fake-service"
+    name = "service-a"
     namespace = "fake-service"
   }
   spec {
@@ -106,15 +106,15 @@ resource "kubernetes_deployment" "fake-service" {
 
     selector {
       match_labels = {
-        service = "fake-service"
-        app = "fake-service"
+        service = "service-a"
+        app = "service-a"
       }
     }
     template {
       metadata {
         labels = {
-          service = "fake-service"
-          app = "fake-service"
+          service = "service-a"
+          app = "service-a"
         }
         annotations = {
           "consul.hashicorp.com/connect-inject" = true           
@@ -192,7 +192,55 @@ resource "kubernetes_deployment" "fake-service" {
             value = "service-a"
           }
         }
-        service_account_name = "fake-service"
+        container {
+          name  = "consul-template-sidecar"
+          image = "phantony/consul-template:0.33.0"
+          volume_mount {
+            name = "app-settings"
+            mount_path = "/etc/app-settings"
+          }
+          volume_mount {
+            name = "app-settings-result"
+            mount_path = "/app/config"
+          }
+          env {
+            name = "TEMPLATE_PATH"
+            value = "/etc/app-settings/app-settings.json"
+          }
+          env {
+            name = "RESULT_PATH"
+            value = "/app/config/app-settings.json"
+          }
+          env {
+            name = "CONSUL_HTTP_ADDR"
+            value = var.consul_addr
+          }
+          env {
+            name = "CONSUL_HTTP_TOKEN"
+            value = var.consul_token
+          }
+          env {
+            name = "CONSUL_HTTP_SSL"
+            value = true
+          }
+          env {
+            name = "CONSUL_HTTP_SSL_VERIFY"
+            value = false
+          }
+          env {
+            name = "VAULT_ADDR"
+            value = var.vault_addr
+          }
+          env {
+            name = "VAULT_NAMESPACE" // required for hcp vault
+            value = "admin"
+          }
+          env {
+            name = "VAULT_TOKEN"
+            value = var.vault_token
+          }
+        }
+        service_account_name = "service-a"
         volume {
           name  = "app-settings"
           config_map {

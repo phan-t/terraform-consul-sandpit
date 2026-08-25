@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.77.0"
+      version = "~> 5.100.0"
     }
     google = {
       source  = "hashicorp/google"
@@ -22,7 +22,7 @@ terraform {
     }
     consul = {
       source  = "hashicorp/consul"
-      version = "~> 2.21.0"
+      version = "~> 2.23.0"
     }
   }
 }

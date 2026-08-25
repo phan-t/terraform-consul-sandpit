@@ -1,25 +1,21 @@
-data "aws_ami" "ubuntu20" {
+data "aws_ami" "hc-base-ubuntu-2404" {
+  for_each = toset(["amd64", "arm64"])
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = [format("hc-base-ubuntu-2404-%s-*", each.value)]
   }
 
   filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+    name   = "state"
+    values = ["available"]
   }
   most_recent = true
-  owners      = ["099720109477"]
+  owners      = ["888995627335"] # ami-prod account
 }
 
 resource "aws_instance" "bastion" {
-  ami             = data.aws_ami.ubuntu20.id
+  ami             = data.aws_ami.hc-base-ubuntu-2404["amd64"].id
   instance_type   = "t2.micro"
   key_name        = module.key_pair.key_pair_name
   subnet_id       = element(module.vpc.public_subnets, 1)

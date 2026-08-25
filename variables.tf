@@ -9,7 +9,7 @@ variable "deployment_name" {
 variable "consul_version" {
   description = "consul version"
   type        = string
-  default     = "1.17.3"
+  default     = "1.22.5"
 }
 
 // enable & disable modules
@@ -150,7 +150,7 @@ variable "gcp_gke_cluster_service_cidr" {
 variable "consul_helm_chart_version" {
   type        = string
   description = "helm chart version"
-  default     = "1.3.6"
+  default     = "1.9.5"
 }
 
 variable "consul_ent_license" {

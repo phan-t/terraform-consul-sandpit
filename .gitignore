@@ -50,4 +50,10 @@ kubeconfig*
 *.hclic
 
 # Ignore temporary files
-*.tmp
+*.tmp.terraform/
+*.tfvars.json
+.terraform.tfstate.lock.info
+.terraform/
+*_random.data
+*_random.json
+*.data

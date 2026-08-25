@@ -1,14 +1,14 @@
 variable "test_prefix" {
   type    = string
-  default = "test"
+  default = "test-0.2"
 }
 
 variable "test_units" {
   type    = number
-  default = 40
+  default = 10
 }
 
 variable "test_file" {
   type = string
-  default = "300mb_data.json"
+  default = "0.2g_random.data"
 }
